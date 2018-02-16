@@ -8,6 +8,7 @@ Link: https://data.nasa.gov/resource/y77d-th95.json
 Import mechanism:
 1. Opens the file from the given argument
 2. Parses the JSON file using the python json module
+2a. Changes "mass" from a string to an integer for future querying
 3. Names the collection based on the filename.
     ex. "filename2345.json" creates a "filename234" collection.
 4. Adds each entry in the parsed JSON file into the collection.
