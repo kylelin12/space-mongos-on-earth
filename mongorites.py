@@ -29,9 +29,11 @@ def main():
 
     # Test queries
     #print_query(query_all())
-    #print_query(query_ltmass(900))
+    #print_query(query_ltmass(50))
     #print_query(query_gtmass(900))
-    print_query(query_recclass("H6"))
+    #print_query(query_mass(4000))
+    #print_query(query_recclass("H6"))
+    print_query(query_recclass_mass("H6", 4000))
 
     # Cleans up after itself
     drop_collection(fname)
@@ -47,6 +49,13 @@ def json_to_collection(filename):
     # Parses the JSON file
     parsed_col = json.loads(col_json.read())
 
+    # Converts "mass" from string to integer
+    for entry in parsed_col:
+        try:
+            entry["mass"] = int(entry["mass"])
+        except: # Ignores all entries where mass is not defined
+            pass
+
     # Creates collection based on name of file
     collection = dbs[fname]
 
@@ -61,12 +70,27 @@ def query_all():
 
 # Queries less than given mass
 def query_ltmass(mass):
-    results = dbs.meteorites.find({"mass": {'$lt': mass}})
+    results = dbs.meteorites.find({'mass': {'$lt': mass}})
+    return results
+
+# Queries greater than given mass
+def query_gtmass(mass):
+    results = dbs.meteorites.find({'mass': {'$gt': mass}})
+    return results
+
+# Queries the given mass
+def query_mass(mass):
+    results = dbs.meteorites.find({'mass': mass})
     return results
 
 # Queries recclass
 def query_recclass(recclass):
-    results = dbs.metorites.find({"recclass": recclass})
+    results = dbs.meteorites.find({'recclass': recclass})
+    return results
+
+# Queries recclass & mass
+def query_recclass_mass(recclass, mass):
+    results = dbs.meteorites.find({'$and': [{'recclass': recclass, 'mass': mass}]})
     return results
 
 # Prints query
@@ -74,6 +98,7 @@ def print_query(query):
     for entry in query:
         print(entry)
 
+# Drops the collection
 def drop_collection(filename):
     dbs.drop_collection(filename)
 
